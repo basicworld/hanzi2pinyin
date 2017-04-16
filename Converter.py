@@ -8,16 +8,16 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 import re
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
-DICT_FILE_OBJ = open(os.path.join(BASEDIR, 'pinyin_dict.txt'))
+DICT_FILENAME = os.path.join(BASEDIR, 'pinyin_dict.txt')
 
 
 class Converter(object):
-    def __init__(self, dict_file_obj=DICT_FILE_OBJ, jointer=',',
+    def __init__(self, dict_filename=DICT_FILENAME, jointer=',',
                  mark_tone=True, char_if_not_match='XX0',
                  ignore_num=True, ignore_alphabet=True):
         """
         汉字转化为拼音
-        @dict_file_obj 词典库文件
+        @dict_filename 词典库文件
         @jointer 字符串连接符
         @mark_tone 是否输出声调
         @char_if_not_match 未匹配时的替代值
@@ -27,10 +27,9 @@ class Converter(object):
         e.g.
         >>> c = Converter()
         >>> print c.convert('中国')
-        >>>
         """
         self._dict = {}
-        for line in dict_file_obj:
+        for line in open(dict_filename):
             line = line.decode("utf-8").rstrip()
             self._dict[line[0]] = line[1:].split(',')
 
