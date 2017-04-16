@@ -1,28 +1,58 @@
 # coding:utf8
 """
+@author basicworld@163.com
 """
 import sys
+import os
 reload(sys)
 sys.setdefaultencoding("utf-8")
 import re
+BASEDIR = os.path.dirname(os.path.abspath(__file__))
+DICT_FILE_OBJ = open(os.path.join(BASEDIR, 'pinyin_dict.txt'))
 
 
 class Converter(object):
-    def __init__(self, dict_file='./pinyin_dict.txt'):
+    def __init__(self, dict_file_obj=DICT_FILE_OBJ, jointer=',',
+                 mark_tone=True, char_if_not_match='XX0',
+                 ignore_num=True, ignore_alphabet=True):
+        """
+        汉字转化为拼音
+        @dict_file_obj 词典库文件
+        @jointer 字符串连接符
+        @mark_tone 是否输出声调
+        @char_if_not_match 未匹配时的替代值
+        @ignore_num 忽略数字  # todo 功能未完成
+        @ignore_alphabet 忽略英文字母  # todo 功能未完成
+
+        e.g.
+        >>> c = Converter()
+        >>> print c.convert('中国')
+        >>>
+        """
         self._dict = {}
-        for line in open(dict_file):
+        for line in dict_file_obj:
             line = line.decode("utf-8").rstrip()
             self._dict[line[0]] = line[1:].split(',')
 
-    def convert(self, string, jointer=',', with_tone=True, char_for_not_hanzi='XX0'):
+        self._jointer = jointer
+        self._mark_tone = mark_tone
+        self._char_if_not_match = char_if_not_match
+
+    def convert(self, string):
+        """
+        @string unicode或者utf8编码的汉字字符串
+        """
         string = string.decode("utf-8")
         pinyin = []
         # map 层
         for key in string:
-            pinyin.append(self._dict.get(key, [char_for_not_hanzi])[0])
+            pinyin.append(self._dict.get(key, [self._char_if_not_match])[0])
 
         # 输出层
-        if with_tone:
-            return jointer.join(pinyin)
+        if self._mark_tone:
+            return self._jointer.join(pinyin)
         else:
-            return jointer.join([i[:-1] for i in pinyin])
+            return self._jointer.join([i[:-1] for i in pinyin])
+
+    def __del__(self):
+        pass
